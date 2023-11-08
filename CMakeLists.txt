@@ -1,0 +1,6 @@
+cmake_minimum_required(VERSION 2.8)
+project( DIP_2 )
+find_package( OpenCV REQUIRED )
+include_directories(${OpenCV_INCLUDE_DIRS} include)
+add_executable( DIP_2 src/main.cpp src/huffman.cpp src/binaryread.cpp src/lzwu.cpp)
+target_link_libraries( DIP_2 ${OpenCV_LIBS} )

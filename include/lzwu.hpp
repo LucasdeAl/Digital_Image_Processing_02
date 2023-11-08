@@ -1,4 +1,4 @@
-#include "../binread/binaryread.hpp"
+#include <binaryread.hpp>
 
 struct LZW_cell{
     unsigned int key;

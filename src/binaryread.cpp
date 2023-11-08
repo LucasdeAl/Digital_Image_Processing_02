@@ -1,4 +1,4 @@
-#include "binaryread.hpp"
+#include <binaryread.hpp>
 #include <iostream>
 
 unsigned int ler_num(std::vector<bool> bnum){

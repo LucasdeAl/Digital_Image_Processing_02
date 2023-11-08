@@ -1,4 +1,4 @@
-#include "lzwu.hpp"
+#include <lzwu.hpp>
 #include <iostream>
 #include <iterator>
 #include <new>

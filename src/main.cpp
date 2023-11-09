@@ -1,11 +1,10 @@
 #include <iostream>
-#include <lzwu.hpp>
 #include <queue>
 #include <map>
 #include <vector>
 #include <bitset>
 #include <opencv2/opencv.hpp>
-
+    
 
 using namespace std;
 using namespace cv;
@@ -109,14 +108,12 @@ public:
 };
 
 int main() {
-    Mat image = imread("../images/benchmark.bmp");
+    Mat image = imread("../images/benchmark.bmp",IMREAD_COLOR);
 
     if (image.empty()) {
         cerr << "Error: Unable to load the image." << endl;
         return -1;
     }
-
-    //cvtColor(image, image, COLOR_BGR2RGB);
 
     Size image_size = image.size();
 

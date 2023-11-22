@@ -1,7 +1,6 @@
 #include <opencv2/opencv.hpp>
 #include <iostream>
 #include <vector>
-#include <fstream>
 
 using namespace cv;
 using namespace std;
@@ -60,7 +59,7 @@ Mat decodeRunLength(const vector<vector<pair<int, int>>>& encodedData, int width
 
 
 int main() {
-    Mat originalImage = imread("../images/benchmark.bmp");
+    Mat originalImage = imread("../images/benchmark.bmp",IMREAD_COLOR);
 
     
     vector<vector<pair<int,int>>> encodedData = encodeRunLength(originalImage);
@@ -77,10 +76,12 @@ int main() {
 
     cout<<origin<<" "<<encodedBytes;
 
+    
+
 
     // Exibe a imagem original e a imagem decodificada
-    imshow("Original Image", originalImage);
-    imshow("Decoded Image", decodedImage);
-    //waitKey(0);
+    //imshow("Original Image", originalImage);
+    //imshow("Decoded Image", decodedImage);
+    waitKey(0);
     return 0;
 }

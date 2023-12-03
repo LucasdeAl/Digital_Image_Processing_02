@@ -5,12 +5,9 @@
 #include <vector>
 #include <opencv2/opencv.hpp>
 
-// Compress a string to a list of output symbols.
-// The result will be written to the output iterator
-// starting at "result"; the final iterator is returned.
+
 template <typename Iterator>
 Iterator compress(cv::Mat& image, Iterator result) {
-  // Build the dictionary.
   int dictSize = 256;
   std::map<std::string,int> dictionary;
   for (int i = 0; i < 256; i++)
@@ -33,7 +30,7 @@ Iterator compress(cv::Mat& image, Iterator result) {
                   w = wc;
                 else {
                   *result++ = dictionary[w];
-                  // Add wc to the dictionary.
+                  // adiciona wc ao dicionario
                   dictionary[wc] = dictSize++;
                   w = std::string(1, (char)c);
                 }
@@ -41,17 +38,16 @@ Iterator compress(cv::Mat& image, Iterator result) {
         }
     }
   
-  // Output the code for w.
+
   if (!w.empty())
     *result++ = dictionary[w];
   return result;
 }
 
-// Decompress a list of output ks to a string.
-// "begin" and "end" must form a valid range of ints
+
 template <typename Iterator>
 cv::Mat decompress(Iterator begin, Iterator end,int rows, int cols) {
-  // Build the dictionary.
+
   int dictSize = 256;
   std::map<int,std::string> dictionary;
   for (int i = 0; i < 256; i++)
@@ -72,7 +68,7 @@ cv::Mat decompress(Iterator begin, Iterator end,int rows, int cols) {
     else if (k == dictSize)
       entry = w + w[0];
     else
-      throw "Bad compressed k";
+      throw "má compressão";
    int c = 0; 
    for (; l < cn; ++l) {
             for (; j < cols; ++j) {
@@ -90,7 +86,7 @@ cv::Mat decompress(Iterator begin, Iterator end,int rows, int cols) {
         }
     
     add:
-    // Add w+entry[0] to the dictionary.
+    // Adiciona w+entry[0] ao dicionario.
     dictionary[dictSize++] = w + entry[0];
     
     w = entry;

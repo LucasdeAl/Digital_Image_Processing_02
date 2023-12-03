@@ -163,6 +163,7 @@ int main() {
         std::string ins;
         ins.assign( std::istreambuf_iterator<char>(in), std::istreambuf_iterator<char>());
         auto fin = QuantitizationDecompress(ins);
+        imwrite("../images/benchmarkModificado.bmp",fin);
         imshow("Output", fin);
         waitKey();
     }

@@ -1,6 +1,7 @@
 #include <string>
 #include <map>
 #include <iostream>
+#include <fstream>
 #include <iterator>
 #include <vector>
 #include <opencv2/opencv.hpp>
@@ -95,13 +96,83 @@ cv::Mat decompress(Iterator begin, Iterator end,int rows, int cols) {
 }
 
 
+std::string vectorToString(const std::vector<int>& vec) {
+    std::ostringstream oss;
+    
+    // Utiliza um iterador para percorrer o vector e inserir os inteiros no fluxo de saída
+    for (auto it = vec.begin(); it != vec.end(); ++it) {
+        oss << *it;
+        // Adiciona um espaço entre os inteiros (pode ser ajustado conforme necessário)
+        if (std::next(it) != vec.end()) {
+            oss << ' ';
+        }
+    }
+    
+    // Retorna a string resultante
+    return oss.str();
+}
+
+// Função que converte uma string para um vector de inteiros
+std::vector<int> stringToVector(const std::string& str) {
+    std::vector<int> result;
+    std::istringstream iss(str);
+    
+    // Utiliza um fluxo de entrada para ler os inteiros da string
+    int value;
+    while (iss >> value) {
+        // Adiciona cada inteiro ao vector
+        result.push_back(value);
+    }
+    
+    // Retorna o vector resultante
+    return result;
+}
+
+std::vector<int> decodeBinaryFile(const char* filename) {
+    std::vector<int> result;
+
+    // Abrir o arquivo binário para leitura em modo binário
+    std::ifstream inputFile(filename, std::ios::binary);
+
+    // Verificar se o arquivo foi aberto corretamente
+    if (!inputFile.is_open()) {
+        std::cerr << "Erro ao abrir o arquivo para leitura." << std::endl;
+        return result; // Retorna um vetor vazio em caso de erro
+    }
+
+    // Ler o tamanho do vetor
+    size_t vectorSize;
+    inputFile.read(reinterpret_cast<char*>(&vectorSize), sizeof(size_t));
+
+    // Ler os dados do vetor
+    result.resize(vectorSize);
+    inputFile.read(reinterpret_cast<char*>(result.data()), vectorSize * sizeof(int));
+
+    // Fechar o arquivo
+    inputFile.close();
+
+    return result;
+}
 
 int main() {
   std::vector<int> compressed;
   cv::Mat image = cv::imread("../images/benchmarkModificado.bmp",cv::IMREAD_UNCHANGED);
   compress(image, std::back_inserter(compressed));
-  //copy(compressed.begin(), compressed.end(), std::ostream_iterator<int>(std::cout, ", "));
-  std::cout << "tamanho comprimido: "<<compressed.size()<<std::endl;
+
+  std::ofstream out("../images/test.mils", std::ios::binary);
+  // Escrever o tamanho do vetor no arquivo
+  size_t vectorSize = compressed.size();
+  out.write(reinterpret_cast<const char*>(&vectorSize), sizeof(size_t));
+
+  // Escrever os dados do vetor no arquivo
+  out.write(reinterpret_cast<const char*>(compressed.data()), compressed.size() * sizeof(int));
+
+  // Fechar o arquivo
+  out.close();
+  
+  compressed = decodeBinaryFile("../images/test.mils");
+  //std::cout << "tamanho comprimido do binário: "<<in<<std::endl;
+  std::cout << "tamanho comprimido no vector: "<<compressed.size()*sizeof(int)<<std::endl;
   size_t origin = image.total() * image.elemSize();
   std::cout<<"tamanho original: "<< origin<<std::endl;
   cv::Mat decompressed = decompress(compressed.begin(),compressed.end(),image.rows,image.cols);

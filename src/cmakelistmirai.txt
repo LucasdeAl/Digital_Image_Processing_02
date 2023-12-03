@@ -9,3 +9,6 @@ add_executable( DIP_2 src/main.cpp src/binaryread.cpp src/lzwu.cpp src/quant.cpp
 target_link_libraries( DIP_2 ${OpenCV_LIBS} )
 
 
+
+
+

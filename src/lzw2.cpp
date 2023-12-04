@@ -97,21 +97,31 @@ std::vector<int> decodeBinaryFile(const char* filename) {
 using namespace cv;
 
 
-int main() {
-    
+int main(int argc, char** argv) {
+    if(argc < 3){
+        std::cout << "Cite um path para imagem e um intervalo de cores entre 0 e 999! (Não incluindo esses números!)";
+        return -1;
+    }
 
     try{
         std::vector<int> compressed;
         unsigned int range = 1;
-        std::cout << "Insira um intervalo de cores entre 0 e 999 (Não incluindo esses números!)" << std::endl;
-        std::cin >> range;
-        Mat im = imread("../images/benchmark.bmp", IMREAD_COLOR);
+        std::string rangeString = argv[2];
+        range = (unsigned int)std::stoi(rangeString);
+        Mat im = imread(argv[1], IMREAD_COLOR);
         //primeira compressão mirai
         auto outs = QuantitizationCompress(im, range);
         //lzw
         compress(outs,std::back_inserter(compressed));
         //salva arquivo
-        std::ofstream out("../images/test.mils", std::ios::binary);
+        std::string outName;
+        if(argc < 4){
+          outName = "test";
+        }
+        else{
+          outName = argv[3];
+        }
+        std::ofstream out("../images/" + outName + ".mils", std::ios::binary);
         size_t vectorSize = compressed.size();
         out.write(reinterpret_cast<const char*>(&vectorSize), sizeof(size_t));
         out.write(reinterpret_cast<const char*>(compressed.data()), compressed.size() * sizeof(int));
@@ -119,7 +129,7 @@ int main() {
 
 
         // abre arquivo e descomprime lzw
-        compressed = decodeBinaryFile("../images/test.mils");
+        compressed = decodeBinaryFile(("../images/" + outName + ".mils").c_str());
         std::string decompressed = decompress(compressed.begin(), compressed.end());
         //descomprime mirai
         auto fin = QuantitizationDecompress(decompressed);

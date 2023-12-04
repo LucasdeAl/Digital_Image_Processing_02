@@ -277,11 +277,53 @@ void threeDigitConv(unsigned int num, std::vector<std::vector<bool>> &m){
     }
 }
 
+void fourDigitConv(unsigned int num, std::vector<std::vector<bool>> &m){
+    unsigned int soma = 0;
+    for(int i = 3; i >= 0; i--){
+        unsigned char digit = (num/pow(10, i))- soma;
+        switch(digit){
+            case 0:
+                m.push_back(std::vector<bool>{0, 0, 0, 0});
+                break;
+            case 1:
+                m.push_back(std::vector<bool>{1, 0, 0, 0});
+                break;
+            case 2:
+                m.push_back(std::vector<bool>{0, 1, 0, 0});
+                break;
+            case 3:
+                m.push_back(std::vector<bool>{1, 1, 0, 0});
+                break;
+            case 4:
+                m.push_back(std::vector<bool>{0, 0, 1, 0});
+                break;
+            case 5:
+                m.push_back(std::vector<bool>{1, 0, 1, 0});
+                break;
+            case 6:
+                m.push_back(std::vector<bool>{0, 1, 1, 0});
+                break;
+            case 7:
+                m.push_back(std::vector<bool>{1, 1, 1, 0});
+                break;
+            case 8:
+                m.push_back(std::vector<bool>{0, 0, 0, 1});
+                break;
+            case 9:
+                m.push_back(std::vector<bool>{1, 0, 0, 1});
+        }
+        soma += digit;
+        soma *= 10;
+    }
+    if(soma != num*10){
+        throw "Algo de errado!";
+    }
+}
 
 std::vector<std::vector<bool>> toBMat(std::vector<RGBcell> palette, std::vector<unsigned int> indexes, std::pair<unsigned int, unsigned int> size){
     std::vector<std::vector<bool>> out;
-    threeDigitConv(size.first, out);
-    threeDigitConv(size.second, out);
+    fourDigitConv(size.first, out);
+    fourDigitConv(size.second, out);
     for(auto i = palette.begin(); i != palette.end(); i++){
         threeDigitConv(i->c[0], out);
         threeDigitConv(i->c[1], out);
@@ -327,12 +369,21 @@ unsigned int converteBool(std::vector<bool> most, std::vector<bool> middle, std:
     return (nmost * 100) + (nmiddle * 10) + (nleast);
 }
 
+unsigned int converteBool4(std::vector<bool> most, std::vector<bool> middle, std::vector<bool> least, std::vector<bool> garbage){
+    auto nmost = ler_num(most);
+    auto nmiddle = ler_num(middle);
+    auto nleast = ler_num(least);
+    auto ngarbage = ler_num(garbage);
+    return (nmost * 1000) + (nmiddle * 100) + (nleast * 10) + (ngarbage);
+}
+
+
 Mat QuantitizationDecompress(std::string in){
     auto mat = constroi_matriz(in, 4);
     unsigned int imInit;
     std::vector<RGBcell> palette;
-    auto size = std::pair<unsigned int, unsigned int>(converteBool(mat[0], mat[1], mat[2]), converteBool(mat[3], mat[4], mat[5]));
-    for(unsigned int i = 6; i < mat.size(); i+=9){
+    auto size = std::pair<unsigned int, unsigned int>(converteBool4(mat[0], mat[1], mat[2], mat[3]), converteBool4(mat[4], mat[5], mat[6], mat[7]));
+    for(unsigned int i = 8; i < mat.size(); i+=9){
         if(ler_num(mat[i]) == 15){
             imInit = i+1;
             break;
